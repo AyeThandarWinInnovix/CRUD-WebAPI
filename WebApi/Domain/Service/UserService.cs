@@ -1,4 +1,5 @@
-﻿using WebApi.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using WebApi.Data;
 using WebApi.Domain.Interface;
 using WebApi.Dtos;
 
@@ -57,7 +58,7 @@ namespace WebApi.Domain.Service
             }
         }
 
-        public async Task<TblUser> GetUserByEmail(string email)
+        public async Task<UserDto> GetUserByEmail(string email)
         {
             string query = @"select 
                                 user_id AS UserId, 
@@ -71,12 +72,12 @@ namespace WebApi.Domain.Service
                             from Tbl_user 
                             where email=@email
                             and is_active = '1'";
-            var user = await _dataAccess.GetData<TblUser, dynamic>(query, new { email = email });
+            var user = await _dataAccess.GetData<UserDto, dynamic>(query, new { email = email });
 
             return user.FirstOrDefault();
         }
 
-        public async Task<TblUser> GetUserById(int userId)
+        public async Task<UserDto> GetUserById(int userId)
         {
             string query = @"select 
                                 user_id AS UserId, 
@@ -90,12 +91,54 @@ namespace WebApi.Domain.Service
                             from Tbl_user 
                             where user_id=@userId
                             and is_active = '1'";
-            var user = await _dataAccess.GetData<TblUser, dynamic>(query, new { userId = userId });
+            var user = await _dataAccess.GetData<UserDto, dynamic>(query, new { userId = userId });
 
             return user.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<TblUser>> GetUsers()
+        public async Task<UserDetailDto> GetUserDetailById(int userId)
+        {
+            var user = await _context.TblUsers
+                        .Include(u => u.TblPosts)
+                        .ThenInclude(p => p.TblComments)
+                        .Include(u => u.TblComments)
+                        .Where(u => u.UserId == userId && u.IsActive)
+                        .FirstOrDefaultAsync();
+
+            if (user == null) throw new Exception("User not found or not active");
+
+            var userDetailDto = new UserDetailDto
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                Password = user.Password,
+                Email = user.Email,
+                Role = user.Role,
+                IsActive = user.IsActive,
+                CreatedAt = user.CreatedAt,
+                UpdatedAt = user.UpdatedAt,
+                Posts = user.TblPosts.Select(p => new UserDetailPostDto
+                {
+                    PostId = p.PostId,
+                    Title = p.Title,
+                    Comments = p.TblComments.Select(c => new UserDetailCommentDto
+                    {
+                        CommentId = c.CommentId,
+                        Content = c.Content
+                    }).ToList()
+                }).ToList(),
+                Comments = user.TblComments.Select(c => new UserCreatedCommentDto
+                {
+                    CommentId = c.CommentId,
+                    Content = c.Content,
+                    PostId = c.PostId
+                }).ToList()
+            };
+
+            return userDetailDto;
+        }
+
+        public async Task<IEnumerable<UserDto>> GetUsers()
         {
             string query = @"
                             SELECT 
@@ -109,7 +152,7 @@ namespace WebApi.Domain.Service
                                 updated_at AS UpdatedAt 
                             FROM Tbl_user
                             where is_active = '1'";
-            var users = await _dataAccess.GetData<TblUser, dynamic>(query, new { });
+            var users = await _dataAccess.GetData<UserDto, dynamic>(query, new { });
 
             return users;
         }

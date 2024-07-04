@@ -19,10 +19,18 @@ namespace WebApi.Controllers
 
         [HttpGet]
         [Route("")]
-        public async Task<BaseResponseModel<TblUser>> GetUsers()
+        public async Task<BaseResponseModel<UserDto>> GetUsers()
         {
             var users = await _userService.GetUsers();
-            return new BaseResponseModel<TblUser>("200", "Success", users.ToList());
+            return new BaseResponseModel<UserDto>("200", "Success", users.ToList());
+        }
+
+        [HttpGet]
+        [Route("GetDetailsById/{userId}")]
+        public async Task<BaseResponseModel<UserDetailDto>> GetUsersDetailsById(int userId)
+        {
+            var users = await _userService.GetUserDetailById(userId);
+            return new BaseResponseModel<UserDetailDto>("200", "Success", users);
         }
 
         [HttpPost]
