@@ -10,9 +10,9 @@ namespace WebApi.Domain.Interface
         Task<string> UpdatePost(int postId, PostDto post);
         Task<bool> DeletePost(int postId);
 
-        Task<IEnumerable<TblComment>> GetComments();
-        Task<bool> CreateComment(CommentDto comment);
-        Task<bool> UpdateComment(int commentId, CommentDto comment);
+        Task<IEnumerable<CommentDetailDto>> GetComments();
+        Task<string> CreateComment(CommentDto comment);
+        Task<string> UpdateComment(int commentId, CommentDto comment);
         Task<bool> DeleteComment(int commentId);
     }
 }

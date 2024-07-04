@@ -22,7 +22,7 @@ namespace WebApi.Domain.Service
             var posts = await _context.TblPosts
                              .Include(p => p.User)
                              .Include(p => p.TblComments)
-                             .Where(p => !p.IsDeleted)
+                             .Where(p => !p.IsDeleted && p.User.IsActive)
                              .ToListAsync();
 
             var postDetailDtos = posts.Select(p => new PostDetailDto
@@ -82,7 +82,6 @@ namespace WebApi.Domain.Service
                 Console.WriteLine(ex.ToString());
                 return "An error occurred while creating the post";
             }
-
         }
 
         public async Task<string> UpdatePost(int postId, PostDto postDto)
@@ -150,24 +149,138 @@ namespace WebApi.Domain.Service
             }
         }
 
-        public Task<IEnumerable<TblComment>> GetComments()
+
+
+        public async Task<IEnumerable<CommentDetailDto>> GetComments()
         {
-            throw new NotImplementedException();
+            var comments = await _context.TblComments
+                             .Include(p => p.User)
+                             .Include(p => p.Post)
+                             .Where(p => p.User.IsActive)
+                             .ToListAsync();
+
+            var commentDetailDtos = comments.Select(p => new CommentDetailDto
+            {
+                CommentId = p.CommentId,
+                PostId = p.PostId,
+                UserId = p.UserId,
+                Content = p.Content,
+                CreatedAt = p.CreatedAt,
+                UpdatedAt = p.UpdatedAt,
+                User = new UserDto
+                {
+                    Username = p.User.Username,
+                    Email = p.User.Email
+                },
+                Post = new PostDto
+                {
+                    Title = p.Post.Title,
+                    Content = p.Post.Content
+                }
+            });
+
+            return commentDetailDtos;
         }
 
-        public Task<bool> CreateComment(CommentDto comment)
+        public async Task<string> CreateComment(CommentDto commentDto)
         {
-            throw new NotImplementedException();
+            var user = await _context.TblUsers.FindAsync(commentDto.UserId);
+            if (user == null)
+                return "User not found";
+
+            if (!user.IsActive)
+                return "User is not active";
+
+            var post = await _context.TblPosts.FindAsync(commentDto.PostId);
+            if (post == null)
+                return "Post not found";
+
+            if (post.IsDeleted)
+                return "Post is deleted";
+
+            try
+            {
+                var comment = new TblComment
+                {
+                    PostId = commentDto.PostId,
+                    UserId = commentDto.UserId,
+                    Content = commentDto.Content,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                _context.Add(comment);
+                await _context.SaveChangesAsync();
+
+                return "Comment created successfully";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return "An error occurred while creating the comment";
+            }
         }
 
-        public Task<bool> UpdateComment(int commentId, CommentDto comment)
+        public async Task<string> UpdateComment(int commentId, CommentDto commentDto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var existingComment = await _context.TblComments.FindAsync(commentId);
+                if (existingComment == null)
+                    return "Comment not found";
+
+                var post = await _context.TblPosts.FindAsync(commentDto.PostId);
+                if (post == null)
+                    return "Post not found";
+
+                var user = await _context.TblUsers.FindAsync(commentDto.UserId);
+                if (user == null)
+                    return "User not found";
+
+                if (!user.IsActive)
+                    return "User is not active";
+
+                if (post.IsDeleted)
+                    return "Post is deleted";
+
+                if (existingComment.UserId != commentDto.UserId)
+                    return "User is not authorized to update this comment";
+
+                existingComment.Content = commentDto.Content;
+                existingComment.UpdatedAt = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+
+                return "Comment updated successfully";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return "An error occurred while updating the comment";
+            }
         }
 
-        public Task<bool> DeleteComment(int commentId)
+        public async Task<bool> DeleteComment(int commentId)
         {
-            throw new NotImplementedException();
+            var existingComment = await _context.TblComments
+                            .Where(p => p.CommentId == commentId)
+                            .FirstOrDefaultAsync();
+
+            try
+            {
+                if (existingComment != null)
+                {
+                    _context.TblComments.Remove(existingComment);
+                    await _context.SaveChangesAsync();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
         }
     }
 }
