@@ -1,6 +1,6 @@
 ﻿namespace WebApi.Dtos
 {
-    public class PostDto
+    public class PostDetailDto
     {
         public int PostId { get; set; }
 
@@ -16,6 +16,9 @@
 
         public DateTime? UpdatedAt { get; set; }
 
-        public string? ImageUrl { get; set; } 
+        public string? ImageUrl { get; set; }
+
+        public UserDto User { get; set; }
+        public ICollection<CommentDto> Comments { get; set; }
     }
 }

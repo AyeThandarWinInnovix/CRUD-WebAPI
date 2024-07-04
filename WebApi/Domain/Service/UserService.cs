@@ -6,10 +6,10 @@ namespace WebApi.Domain.Service
 {
     public class UserService : IUserService
     {
-        private readonly WebAppDbContext _context;
+        private readonly MainDbContext _context;
         private readonly IDataAccess _dataAccess;
 
-        public UserService(WebAppDbContext context, IDataAccess dataAccess)
+        public UserService(MainDbContext context, IDataAccess dataAccess)
         {
             _context = context;
             _dataAccess = dataAccess;

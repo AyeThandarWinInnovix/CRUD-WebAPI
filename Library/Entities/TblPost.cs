@@ -19,6 +19,8 @@ public partial class TblPost
 
     public DateTime? UpdatedAt { get; set; }
 
+    public string? ImageUrl { get; set; }
+
     public virtual ICollection<TblComment> TblComments { get; set; } = new List<TblComment>();
 
     public virtual TblUser User { get; set; } = null!;

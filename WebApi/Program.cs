@@ -12,13 +12,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<WebAppDbContext>(options =>
+builder.Services.AddDbContext<MainDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("WebConnectionString"));
 });
 
 builder.Services.AddTransient<IDataAccess, DataAccess>();
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IPostService, PostService>();
 
 var app = builder.Build();
 

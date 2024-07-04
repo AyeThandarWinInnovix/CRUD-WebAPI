@@ -4,6 +4,8 @@ namespace WebApi.Dtos
 {
     public class UserDto
     {
+        public int UserId { get; set; }
+
         [StringLength(255)]
         public string Username { get; set; } = null!;
 
