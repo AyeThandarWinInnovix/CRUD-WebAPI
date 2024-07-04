@@ -18,6 +18,7 @@ namespace WebApi.Controllers
             _postService = postService;
         }
 
+        // Posts
         [HttpGet]
         [Route("GetPosts")]
         public async Task<BaseResponseModel<PostDetailDto>> GetPosts()
@@ -96,7 +97,7 @@ namespace WebApi.Controllers
         }
 
 
-
+        // Comments
         [HttpGet]
         [Route("GetComments")]
         public async Task<BaseResponseModel<CommentDetailDto>> GetComments()

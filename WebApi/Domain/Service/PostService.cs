@@ -17,6 +17,7 @@ namespace WebApi.Domain.Service
             _dataAccess = dataAccess;
         }
 
+        // Posts
         public async Task<IEnumerable<PostDetailDto>> GetPosts()
         {
             var posts = await _context.TblPosts
@@ -150,7 +151,7 @@ namespace WebApi.Domain.Service
         }
 
 
-
+        // Comments
         public async Task<IEnumerable<CommentDetailDto>> GetComments()
         {
             var comments = await _context.TblComments
