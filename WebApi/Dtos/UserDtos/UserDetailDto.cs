@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebApi.Dtos
+namespace WebApi.Dtos.UserDtos
 {
-    public class UserDto
+    public class UserDetailDto
     {
         public int UserId { get; set; }
 
@@ -24,5 +24,8 @@ namespace WebApi.Dtos
         public DateTime? CreatedAt { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
+
+        public ICollection<UserDetailPostDto> Posts { get; set; }
+        public ICollection<UserCreatedCommentDto> Comments { get; set; }
     }
 }

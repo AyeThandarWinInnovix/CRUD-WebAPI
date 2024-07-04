@@ -1,4 +1,4 @@
-﻿using WebApi.Dtos;
+﻿using WebApi.Dtos.UserDtos;
 
 namespace WebApi.Domain.Interface
 {

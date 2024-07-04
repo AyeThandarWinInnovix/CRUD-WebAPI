@@ -1,4 +1,6 @@
-﻿namespace WebApi.Dtos
+﻿using WebApi.Dtos.UserDtos;
+
+namespace WebApi.Dtos.PostDtos
 {
     public class CommentDetailDto
     {
@@ -14,8 +16,8 @@
 
         public DateTime? UpdatedAt { get; set; }
 
-        public UserDto User { get; set; }
+        public CommentUserDto User { get; set; }
 
-        public PostDto Post { get; set; }
+        public CommentPostDto Post { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace WebApi.Dtos
+﻿namespace WebApi.Dtos.UserDtos
 {
     public class UserCreatedCommentDto
     {

@@ -2,7 +2,8 @@
 using Microsoft.Extensions.Hosting;
 using WebApi.Data;
 using WebApi.Domain.Interface;
-using WebApi.Dtos;
+using WebApi.Dtos.PostDtos;
+using WebApi.Dtos.UserDtos;
 
 namespace WebApi.Domain.Service
 {
@@ -36,16 +37,12 @@ namespace WebApi.Domain.Service
                 CreatedAt = p.CreatedAt,
                 UpdatedAt = p.UpdatedAt,
                 ImageUrl = p.ImageUrl,
-                User = new UserDto
+                User = new PostUserDto
                 {
                     Username = p.User.Username,
                     Email = p.User.Email
                 },
-                Comments = p.TblComments.Select(c => new CommentDto
-                {
-                    CommentId = c.CommentId,
-                    Content = c.Content
-                }).ToList()
+                CommentsCount = p.TblComments.Count
             });
 
             return postDetailDtos;
@@ -168,12 +165,12 @@ namespace WebApi.Domain.Service
                 Content = p.Content,
                 CreatedAt = p.CreatedAt,
                 UpdatedAt = p.UpdatedAt,
-                User = new UserDto
+                User = new CommentUserDto
                 {
                     Username = p.User.Username,
                     Email = p.User.Email
                 },
-                Post = new PostDto
+                Post = new CommentPostDto
                 {
                     Title = p.Post.Title,
                     Content = p.Post.Content

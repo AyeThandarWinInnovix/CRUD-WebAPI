@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
-using WebApi.Dtos;
+using WebApi.Dtos.PostDtos;
 
 namespace WebApi.Domain.Interface
 {

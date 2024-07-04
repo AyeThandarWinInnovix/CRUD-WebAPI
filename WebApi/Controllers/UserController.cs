@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Domain.Interface;
-using WebApi.Dtos;
+using WebApi.Dtos.UserDtos;
 using WebApi.ResponseModels;
 
 namespace WebApi.Controllers

@@ -2,6 +2,7 @@
 using WebApi.Data;
 using WebApi.Domain.Interface;
 using WebApi.Dtos;
+using WebApi.Dtos.UserDtos;
 
 namespace WebApi.Domain.Service
 {

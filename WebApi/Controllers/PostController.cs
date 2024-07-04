@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using WebApi.Domain.Interface;
-using WebApi.Dtos;
+using WebApi.Dtos.PostDtos;
 using WebApi.ResponseModels;
 
 namespace WebApi.Controllers
