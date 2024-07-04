@@ -29,8 +29,8 @@ namespace WebApi.Controllers
         [Route("GetDetailsById/{userId}")]
         public async Task<BaseResponseModel<UserDetailDto>> GetUsersDetailsById(int userId)
         {
-            var users = await _userService.GetUserDetailById(userId);
-            return new BaseResponseModel<UserDetailDto>("200", "Success", users);
+            var response = await _userService.GetUserDetailById(userId);
+            return response;
         }
 
         [HttpPost]

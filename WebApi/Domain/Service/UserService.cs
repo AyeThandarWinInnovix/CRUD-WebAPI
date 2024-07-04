@@ -3,6 +3,7 @@ using WebApi.Data;
 using WebApi.Domain.Interface;
 using WebApi.Dtos;
 using WebApi.Dtos.UserDtos;
+using WebApi.ResponseModels;
 
 namespace WebApi.Domain.Service
 {
@@ -97,7 +98,7 @@ namespace WebApi.Domain.Service
             return user.FirstOrDefault();
         }
 
-        public async Task<UserDetailDto> GetUserDetailById(int userId)
+        public async Task<BaseResponseModel<UserDetailDto>> GetUserDetailById(int userId)
         {
             var user = await _context.TblUsers
                         .Include(u => u.TblPosts)
@@ -106,7 +107,8 @@ namespace WebApi.Domain.Service
                         .Where(u => u.UserId == userId && u.IsActive)
                         .FirstOrDefaultAsync();
 
-            if (user == null) throw new Exception("User not found or not active");
+            if (user == null)
+                return new BaseResponseModel<UserDetailDto>("404", "User not found or not active");
 
             var userDetailDto = new UserDetailDto
             {
@@ -136,7 +138,7 @@ namespace WebApi.Domain.Service
                 }).ToList()
             };
 
-            return userDetailDto;
+            return new BaseResponseModel<UserDetailDto>("200", "Success", userDetailDto);
         }
 
         public async Task<IEnumerable<UserDto>> GetUsers()
