@@ -66,11 +66,11 @@ namespace WebApi.Controllers
                 if(result == "Post updated successfully")
                     return new BaseResponseModel<bool>("200", "Success", true);
 
-                else if(result == "User has not permission to update this post")
+                else if(result == "User does not have permission to update this post")
                     return new BaseResponseModel<bool>("403", result, false);
 
                 else if(result == "Post not found" || result == "User not found" || result == "User is not active" || result == "Post is deleted")
-                    return new BaseResponseModel<bool>("404", result, false);
+                    return new BaseResponseModel<bool>("404", "Not found", false);
 
                 else
                     return new BaseResponseModel<bool>("400", result, false);
@@ -153,11 +153,11 @@ namespace WebApi.Controllers
                 if (result == "Comment updated successfully")
                     return new BaseResponseModel<bool>("200", "Success", true);
 
-                else if (result == "User has not permission to update this comment")
+                else if (result == "User does not have permission to update this comment")
                     return new BaseResponseModel<bool>("403", result, false);
 
                 else if (result == "Comment not found" || result == "Post not found" || result == "User not found" || result == "User is not active" || result == "Post is deleted")
-                    return new BaseResponseModel<bool>("404", result, false);
+                    return new BaseResponseModel<bool>("404", "Not found", false);
 
                 else
                     return new BaseResponseModel<bool>("400", result, false);

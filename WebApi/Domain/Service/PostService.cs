@@ -94,7 +94,7 @@ namespace WebApi.Domain.Service
                     return "Post is deleted";
 
                 if (existingPost.UserId != postDto.UserId)
-                    return "User has not permission to update this post";
+                    return "User does not have permission to update this post";
 
                 var user = await _context.TblUsers.FindAsync(postDto.UserId);
                 if (user == null)
@@ -247,7 +247,7 @@ namespace WebApi.Domain.Service
                     return "Post is deleted";
 
                 if (existingComment.UserId != commentDto.UserId)
-                    return "User has not permission to update this comment";
+                    return "User does not have permission to update this comment";
 
                 existingComment.Content = commentDto.Content;
                 existingComment.UpdatedAt = DateTime.UtcNow;
