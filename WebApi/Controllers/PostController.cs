@@ -25,7 +25,7 @@ namespace WebApi.Controllers
         {
             var posts = await _postService.GetPosts();
             if (!posts.Any())
-                return new BaseResponseModel<PostDetailDto>("500", "No post found.");
+                return new BaseResponseModel<PostDetailDto>("404", "No post found.");
 
             return new BaseResponseModel<PostDetailDto>("200", "Success", posts.ToList());
         }
@@ -65,6 +65,13 @@ namespace WebApi.Controllers
 
                 if(result == "Post updated successfully")
                     return new BaseResponseModel<bool>("200", "Success", true);
+
+                else if(result == "User has not permission to update this post")
+                    return new BaseResponseModel<bool>("403", result, false);
+
+                else if(result == "Post not found" || result == "User not found" || result == "User is not active" || result == "Post is deleted")
+                    return new BaseResponseModel<bool>("404", result, false);
+
                 else
                     return new BaseResponseModel<bool>("400", result, false);
 
@@ -81,14 +88,16 @@ namespace WebApi.Controllers
         {
             try
             {
-                bool isDeleted = await _postService.DeletePost(postId);
+                string result = await _postService.DeletePost(postId);
 
-                if (!isDeleted)
-                {
-                    return new BaseResponseModel<bool>("500", "An error occurred while deleting the post.", false);
-                }
+                if (result == "Post deleted successfully")
+                    return new BaseResponseModel<bool>("200", "Success", true);
 
-                return new BaseResponseModel<bool>("200", "Success", true);
+                else if (result == "Post not found or already deleted")
+                    return new BaseResponseModel<bool>("404", result, false);
+
+                else
+                    return new BaseResponseModel<bool>("500", result, false);
             }
             catch (Exception ex)
             {
@@ -104,7 +113,7 @@ namespace WebApi.Controllers
         {
             var comments = await _postService.GetComments();
             if (!comments.Any())
-                return new BaseResponseModel<CommentDetailDto>("500", "No comment found");
+                return new BaseResponseModel<CommentDetailDto>("404", "No comment found");
 
             return new BaseResponseModel<CommentDetailDto>("200", "Success", comments.ToList());
         }
@@ -143,6 +152,13 @@ namespace WebApi.Controllers
 
                 if (result == "Comment updated successfully")
                     return new BaseResponseModel<bool>("200", "Success", true);
+
+                else if (result == "User has not permission to update this comment")
+                    return new BaseResponseModel<bool>("403", result, false);
+
+                else if (result == "Comment not found" || result == "Post not found" || result == "User not found" || result == "User is not active" || result == "Post is deleted")
+                    return new BaseResponseModel<bool>("404", result, false);
+
                 else
                     return new BaseResponseModel<bool>("400", result, false);
 
@@ -159,14 +175,17 @@ namespace WebApi.Controllers
         {
             try
             {
-                bool isDeleted = await _postService.DeleteComment(commentId);
+                string result = await _postService.DeleteComment(commentId);
 
-                if (!isDeleted)
-                {
+                if ( result == "Comment deleted successfully")
+                    return new BaseResponseModel<bool>("200", "Success", true);
+
+                else if (result == "Comment not found or already deleted")
+                    return new BaseResponseModel<bool>("404", result, false);
+
+                else
                     return new BaseResponseModel<bool>("500", "An error occurred while deleting the comment.", false);
-                }
 
-                return new BaseResponseModel<bool>("200", "Success", true);
             }
             catch (Exception ex)
             {

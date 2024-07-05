@@ -8,11 +8,11 @@ namespace WebApi.Domain.Interface
         Task<IEnumerable<PostDetailDto>> GetPosts();
         Task<string> CreatePost(PostDto post);
         Task<string> UpdatePost(int postId, PostDto post);
-        Task<bool> DeletePost(int postId);
+        Task<string> DeletePost(int postId);
 
         Task<IEnumerable<CommentDetailDto>> GetComments();
         Task<string> CreateComment(CommentDto comment);
         Task<string> UpdateComment(int commentId, CommentDto comment);
-        Task<bool> DeleteComment(int commentId);
+        Task<string> DeleteComment(int commentId);
     }
 }

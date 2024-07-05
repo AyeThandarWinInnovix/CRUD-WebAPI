@@ -83,7 +83,7 @@ namespace WebApi.Controllers
         {
             var user = await _userService.GetUserById(userId);
             if (user is null)
-                return new BaseResponseModel<bool>("500", "User Not Found or already deleted.");
+                return new BaseResponseModel<bool>("404", "User Not Found or already deleted.");
 
             var result = await _userService.DeleteUser(userId);
 

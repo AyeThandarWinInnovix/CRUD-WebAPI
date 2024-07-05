@@ -90,8 +90,11 @@ namespace WebApi.Domain.Service
                 if (existingPost == null)
                     return "Post not found";
 
+                if (existingPost.IsDeleted)
+                    return "Post is deleted";
+
                 if (existingPost.UserId != postDto.UserId)
-                    return "User is not authorized to update this post";
+                    return "User has not permission to update this post";
 
                 var user = await _context.TblUsers.FindAsync(postDto.UserId);
                 if (user == null)
@@ -117,33 +120,35 @@ namespace WebApi.Domain.Service
             }
         }
 
-        public async Task<bool> DeletePost(int postId)
+        public async Task<string> DeletePost(int postId)
         {
             var existingPost = await _context.TblPosts
                             .Include(p => p.TblComments)
                             .Where(p => p.PostId == postId && !p.IsDeleted && p.User.IsActive)
                             .FirstOrDefaultAsync();
 
+            if ( existingPost == null || existingPost.IsDeleted)
+            {
+                return "Post not found or already deleted";
+            }
+
             try
             {
-                if (existingPost != null)
+                existingPost.IsDeleted = true;
+
+                foreach (var comment in existingPost.TblComments.ToList())
                 {
-                    existingPost.IsDeleted = true;
-
-                    foreach (var comment in existingPost.TblComments.ToList())
-                    {
-                        _context.TblComments.Remove(comment);
-                    }
-
-                    await _context.SaveChangesAsync();
+                    _context.TblComments.Remove(comment);
                 }
 
-                return true;
+                await _context.SaveChangesAsync();
+
+                return "Post deleted successfully";
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                return false;
+                return "An error occurred while deleting the post";
             }
         }
 
@@ -242,7 +247,7 @@ namespace WebApi.Domain.Service
                     return "Post is deleted";
 
                 if (existingComment.UserId != commentDto.UserId)
-                    return "User is not authorized to update this comment";
+                    return "User has not permission to update this comment";
 
                 existingComment.Content = commentDto.Content;
                 existingComment.UpdatedAt = DateTime.UtcNow;
@@ -258,26 +263,25 @@ namespace WebApi.Domain.Service
             }
         }
 
-        public async Task<bool> DeleteComment(int commentId)
+        public async Task<string> DeleteComment(int commentId)
         {
             var existingComment = await _context.TblComments
                             .Where(p => p.CommentId == commentId)
                             .FirstOrDefaultAsync();
 
+            if (existingComment == null) return "Comment not found or already deleted";
+
             try
             {
-                if (existingComment != null)
-                {
-                    _context.TblComments.Remove(existingComment);
-                    await _context.SaveChangesAsync();
-                }
+                _context.TblComments.Remove(existingComment);
+                await _context.SaveChangesAsync();
 
-                return true;
+                return "Comment deleted successfully";
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                return false;
+                return "An error occurred while updating the comment";
             }
         }
     }
