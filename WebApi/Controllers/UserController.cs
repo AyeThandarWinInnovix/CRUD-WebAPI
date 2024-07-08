@@ -22,7 +22,7 @@ namespace WebApi.Controllers
         public async Task<BaseResponseModel<UserDto>> GetUsers()
         {
             var users = await _userService.GetUsers();
-            return new BaseResponseModel<UserDto>("200", "Success", users.ToList());
+            return new BaseResponseModel<UserDto>(StatusCodes.Status200OK, "Success", users.ToList());
         }
 
         [HttpGet]
@@ -38,20 +38,20 @@ namespace WebApi.Controllers
         public async Task<BaseResponseModel<bool>> CreateUser(UserDto user)
         {
             if (!ModelState.IsValid)
-                return new BaseResponseModel<bool>("400", "Model is not valid");
+                return new BaseResponseModel<bool>(StatusCodes.Status400BadRequest, "Model is not valid");
 
             var result = await _userService.GetUserByEmail(user.Email);
-            if (result != null) return new BaseResponseModel<bool>("400", "User email already exist");
+            if (result != null) return new BaseResponseModel<bool>(StatusCodes.Status400BadRequest, "User email already exist");
 
             user.IsActive = true;
             var res = await _userService.CreateUser(user);
             if (res)
             {
-                return new BaseResponseModel<bool>("200", "Success", true);
+                return new BaseResponseModel<bool>(StatusCodes.Status200OK, "Success", true);
             }
             else
             {
-                return new BaseResponseModel<bool>("500", "Error creating user", false);
+                return new BaseResponseModel<bool>(StatusCodes.Status500InternalServerError, "Error creating user", false);
             }
 
         }
@@ -61,20 +61,20 @@ namespace WebApi.Controllers
         public async Task<BaseResponseModel<bool>> UpdateUser(int userId, UserDto user)
         {
             if (!ModelState.IsValid)
-                return new BaseResponseModel<bool>("400", "Model is not valid");
+                return new BaseResponseModel<bool>(StatusCodes.Status400BadRequest, "Model is not valid");
 
             var existingUser = await _userService.GetUserById(userId);
             if (existingUser == null)
-                return new BaseResponseModel<bool>("404", "User not found");
+                return new BaseResponseModel<bool>(StatusCodes.Status404NotFound, "User not found");
 
             var res = await _userService.UpdateUser(userId, user);
             if (res)
             {
-                return new BaseResponseModel<bool>("200", "Success", true);
+                return new BaseResponseModel<bool>(StatusCodes.Status200OK, "Success", true);
             }
             else
             {
-                return new BaseResponseModel<bool>("500", "Error updating user", false);
+                return new BaseResponseModel<bool>(StatusCodes.Status500InternalServerError, "Error updating user", false);
             }
         }
 
@@ -83,17 +83,17 @@ namespace WebApi.Controllers
         {
             var user = await _userService.GetUserById(userId);
             if (user is null)
-                return new BaseResponseModel<bool>("404", "User Not Found or already deleted.");
+                return new BaseResponseModel<bool>(StatusCodes.Status404NotFound, "User Not Found or already deleted.");
 
             var result = await _userService.DeleteUser(userId);
 
             if (result)
             {
-                return new BaseResponseModel<bool>("200", "Success", true);
+                return new BaseResponseModel<bool>(StatusCodes.Status200OK, "Success", true);
             }
             else
             {
-                return new BaseResponseModel<bool>("500", "Error deleting user", false);
+                return new BaseResponseModel<bool>(StatusCodes.Status500InternalServerError, "Error deleting user", false);
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BCrypt.Net;
+using Microsoft.EntityFrameworkCore;
 using WebApi.Data;
 using WebApi.Domain.Interface;
 using WebApi.Dtos;
@@ -22,12 +23,15 @@ namespace WebApi.Domain.Service
         {
             try
             {
+                // Hash password with BCrypt
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
                 string query = @"insert into dbo.Tbl_user(username,password, email, role, is_active, created_at, updated_at) 
                                 values(@userName, @password, @email, @role, @isActive, @createdAt, @updatedAt)";
                 await _dataAccess.SaveData(query, new
                 {
                     userName = user.Username,
-                    password = user.Password,
+                    password = hashedPassword,
                     email = user.Email,
                     role = user.Role,
                     isActive = user.IsActive,
@@ -108,7 +112,7 @@ namespace WebApi.Domain.Service
                         .FirstOrDefaultAsync();
 
             if (user == null)
-                return new BaseResponseModel<UserDetailDto>("404", "User not found or not active");
+                return new BaseResponseModel<UserDetailDto>(StatusCodes.Status404NotFound, "User not found or not active");
 
             var userDetailDto = new UserDetailDto
             {
@@ -138,7 +142,7 @@ namespace WebApi.Domain.Service
                 }).ToList()
             };
 
-            return new BaseResponseModel<UserDetailDto>("200", "Success", userDetailDto);
+            return new BaseResponseModel<UserDetailDto>(StatusCodes.Status200OK, "Success", userDetailDto);
         }
 
         public async Task<IEnumerable<UserDto>> GetUsers()
