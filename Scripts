@@ -35,3 +35,66 @@ CREATE TABLE Tbl_comments (
     FOREIGN KEY (post_id) REFERENCES Tbl_posts(post_id),
     FOREIGN KEY (user_id) REFERENCES Tbl_user(user_id)
 );
+
+
+CREATE TABLE Tbl_policy (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    policy_id VARCHAR(15), 
+    policy_holder_name NVARCHAR(100),
+    policy_start_date DATETIME,
+    policy_end_date DATETIME,
+    is_active BIT NOT NULL DEFAULT 0,
+    created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE(),
+    CONSTRAINT UQ_policy_id UNIQUE (policy_id)
+);
+
+CREATE TABLE Tbl_format (
+    id INT PRIMARY KEY IDENTITY(1,1), 
+    format_name NVARCHAR(50) NOT NULL,
+    length INT NOT NULL,            
+    current_value INT NOT NULL,    
+    formatting_at DATETIME NOT NULL,  
+    created_at DATETIME DEFAULT GETDATE() 
+);
+
+
+CREATE PROCEDURE [dbo].[sp_generate_policy_id]
+AS
+BEGIN
+    DECLARE @yearMonth CHAR(4)
+    DECLARE @currentValue INT
+    DECLARE @newPolicyId VARCHAR(15)
+    DECLARE @formatName NVARCHAR(50) = 'PQ'
+    DECLARE @TempTbl TABLE (current_value INT)
+
+    SET @yearMonth = CONVERT(VARCHAR, YEAR(GETDATE()) % 100) + RIGHT('0' + CONVERT(VARCHAR, MONTH(GETDATE())), 2)
+
+    -- Update current_value in Tbl_format and get the new value into temporary table
+    UPDATE Tbl_format
+    SET current_value = current_value + 1,
+        formatting_at = GETDATE()
+    OUTPUT INSERTED.current_value INTO @TempTbl
+    WHERE format_name = @formatName
+
+    -- Assign the new value to the variable
+    SELECT @currentValue = current_value FROM @TempTbl
+
+    -- Generate the new policy_id
+    SET @newPolicyId = @formatName + '-' + @yearMonth + RIGHT('000000' + CONVERT(VARCHAR, @currentValue), 6)
+
+    -- Return the new policy_id
+    SELECT @newPolicyId AS policy_id
+END
+GO
+
+
+CREATE PROCEDURE [dbo].[sp_reset_policy_serial]
+AS
+BEGIN
+    UPDATE Tbl_format
+    SET current_value = 0,
+        formatting_at = GETDATE()
+    WHERE format_name = 'PQ'
+END
+GO
