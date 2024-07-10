@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebApi.Testing;
 
 namespace WebApi.Data
 {
@@ -20,6 +21,10 @@ namespace WebApi.Data
         public virtual DbSet<TblPost> TblPosts { get; set; }
 
         public virtual DbSet<TblUser> TblUsers { get; set; }
+
+        public virtual DbSet<TblFormat> TblFormats { get; set; }
+
+        public virtual DbSet<TblPolicy> TblPolicies { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder.UseSqlServer(_configuration.GetConnectionString("WebConnectionString"));
@@ -115,6 +120,61 @@ namespace WebApi.Data
                 entity.Property(e => e.Username)
                     .HasMaxLength(255)
                     .HasColumnName("username");
+            });
+
+            modelBuilder.Entity<TblFormat>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("PK__Tbl_form__3213E83F19E7F4C8");
+
+                entity.ToTable("Tbl_format");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.CreatedAt)
+                    .HasDefaultValueSql("(getdate())")
+                    .HasColumnType("datetime")
+                    .HasColumnName("created_at");
+                entity.Property(e => e.CurrentValue).HasColumnName("current_value");
+                entity.Property(e => e.FormatName)
+                    .HasMaxLength(50)
+                    .HasColumnName("format_name");
+                entity.Property(e => e.FormattingAt)
+                    .HasDefaultValueSql("(getdate())")
+                    .HasColumnType("datetime")
+                    .HasColumnName("formatting_at");
+                entity.Property(e => e.Length).HasColumnName("length");
+            });
+
+            modelBuilder.Entity<TblPolicy>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("PK__Tbl_poli__3213E83F09C37CD1");
+
+                entity.ToTable("Tbl_policy");
+
+                entity.HasIndex(e => e.PolicyId, "UQ_policy_id").IsUnique();
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.CreatedAt)
+                    .HasDefaultValueSql("(getdate())")
+                    .HasColumnType("datetime")
+                    .HasColumnName("created_at");
+                entity.Property(e => e.IsActive).HasColumnName("is_active");
+                entity.Property(e => e.PolicyEndDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("policy_end_date");
+                entity.Property(e => e.PolicyHolderName)
+                    .HasMaxLength(100)
+                    .HasColumnName("policy_holder_name");
+                entity.Property(e => e.PolicyId)
+                    .HasMaxLength(15)
+                    .IsUnicode(false)
+                    .HasColumnName("policy_id");
+                entity.Property(e => e.PolicyStartDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("policy_start_date");
+                entity.Property(e => e.UpdatedAt)
+                    .HasDefaultValueSql("(getdate())")
+                    .HasColumnType("datetime")
+                    .HasColumnName("updated_at");
             });
 
             OnModelCreatingPartial(modelBuilder);

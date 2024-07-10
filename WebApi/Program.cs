@@ -31,6 +31,7 @@ builder.Services.AddSwaggerGen(swagger =>
 builder.Services.AddTransient<IDataAccess, DataAccess>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IPostService, PostService>();
+builder.Services.AddTransient<IPolicyService, PolicyService>();
 
 var app = builder.Build();
 

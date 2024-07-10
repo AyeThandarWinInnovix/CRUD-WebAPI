@@ -22,6 +22,13 @@ namespace WebApi.Data
             return await connection.QueryAsync<T>(query, parameters);
         }
 
+        public async Task<IEnumerable<T>> GetData<T, P>(string spName, P parameters, string connectionId = "WebConnectionString")
+        {
+            using IDbConnection connection = new SqlConnection
+                (_configuration.GetConnectionString(connectionId));
+            return await connection.QueryAsync<T>(spName, parameters, commandType: CommandType.StoredProcedure);
+        }
+
         public async Task SaveData<P>(string query, P parameters)
         {
             using IDbConnection connection = new SqlConnection(_connectionString);
