@@ -26,6 +26,8 @@ namespace WebApi.Data
 
         public virtual DbSet<TblPolicy> TblPolicies { get; set; }
 
+        public virtual DbSet<TblFileMetadata> TblFileMetadata { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder.UseSqlServer(_configuration.GetConnectionString("WebConnectionString"));
 
@@ -175,6 +177,34 @@ namespace WebApi.Data
                     .HasDefaultValueSql("(getdate())")
                     .HasColumnType("datetime")
                     .HasColumnName("updated_at");
+            });
+
+            modelBuilder.Entity<TblFileMetadata>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("PK__Tbl_File__3213E83F302146C2");
+
+                entity.ToTable("Tbl_fileMetadata");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.FileName)
+                    .HasMaxLength(255)
+                    .HasColumnName("file_name");
+                entity.Property(e => e.FilePath)
+                    .HasMaxLength(255)
+                    .HasColumnName("file_path");
+                entity.Property(e => e.PolicyId)
+                    .HasMaxLength(15)
+                    .IsUnicode(false)
+                    .HasColumnName("policy_id");
+                entity.Property(e => e.UploadDate)
+                    .HasDefaultValueSql("(getdate())")
+                    .HasColumnType("datetime")
+                    .HasColumnName("upload_date");
+
+                entity.HasOne(d => d.Policy).WithMany(p => p.TblFileMetadata)
+                    .HasPrincipalKey(p => p.PolicyId)
+                    .HasForeignKey(d => d.PolicyId)
+                    .HasConstraintName("FK__Tbl_FileM__polic__1AD3FDA4");
             });
 
             OnModelCreatingPartial(modelBuilder);

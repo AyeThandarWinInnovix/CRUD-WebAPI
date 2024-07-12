@@ -22,7 +22,7 @@ namespace WebApi.Controllers
 
         [HttpPost]
         [Route("Create")]
-        public async Task<BaseResponseModel<bool>> CreatePolicy(PolicyCreateDto policyDto)
+        public async Task<BaseResponseModel<bool>> CreatePolicy([FromForm] PolicyCreateDto policyDto)
         {
             if (!ModelState.IsValid)
                 return new BaseResponseModel<bool>(StatusCodes.Status400BadRequest, "Model is not valid");

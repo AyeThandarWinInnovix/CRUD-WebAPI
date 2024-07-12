@@ -20,4 +20,7 @@ public partial class TblPolicy
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
+
+    public virtual ICollection<TblFileMetadata> TblFileMetadata { get; set; } = new List<TblFileMetadata>();
+
 }

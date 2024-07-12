@@ -17,11 +17,14 @@ namespace WebApi.Domain.Service
     {
         private readonly MainDbContext _context;
         private readonly IDataAccess _dataAccess;
+        private readonly string _fileStoragePath;
 
-        public PolicyService(MainDbContext context, IDataAccess dataAccess)
+        public PolicyService(MainDbContext context, IDataAccess dataAccess, IConfiguration configuration)
         {
             _context = context;
             _dataAccess = dataAccess;
+
+            _fileStoragePath = configuration["FileStoragePath"];
         }
 
         public async Task<bool> CreatePolicy(PolicyCreateDto policyDto)
@@ -44,6 +47,29 @@ namespace WebApi.Domain.Service
 
                     _context.Add(policyEntity);
                     await _context.SaveChangesAsync();
+
+                    // Handle file upload if present
+                    if (policyDto.File != null && policyDto.File.Length > 0)
+                    {
+                        var fileName = Path.GetFileName(policyDto.File.FileName);
+                        var filePath = Path.Combine(_fileStoragePath, fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await policyDto.File.CopyToAsync(stream);
+                        }
+
+                        // Save file metadata
+                        var fileMetadata = new TblFileMetadata
+                        {
+                            FileName = fileName,
+                            FilePath = filePath,
+                            PolicyId = policyEntity.PolicyId
+                        };
+
+                        _context.Add(fileMetadata);
+                        await _context.SaveChangesAsync();
+                    }
 
                     return true;
                 }

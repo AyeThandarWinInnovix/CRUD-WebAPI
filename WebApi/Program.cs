@@ -3,6 +3,7 @@ using Microsoft.OpenApi.Models;
 using WebApi.Data;
 using WebApi.Domain.Interface;
 using WebApi.Domain.Service;
+using WebApi.Dtos.PolicyDtos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,8 @@ builder.Services.AddTransient<IDataAccess, DataAccess>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IPostService, PostService>();
 builder.Services.AddTransient<IPolicyService, PolicyService>();
+
+builder.Services.Configure<FileStorageOptions>(builder.Configuration.GetSection("FileStoragePath"));
 
 var app = builder.Build();
 
