@@ -58,6 +58,14 @@ CREATE TABLE Tbl_format (
     created_at DATETIME DEFAULT GETDATE() 
 );
 
+CREATE TABLE Tbl_FileMetadata (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    file_name NVARCHAR(255),
+    file_path NVARCHAR(255),
+    upload_date DATETIME DEFAULT GETDATE(),
+    policy_id varchar(15),
+    FOREIGN KEY (policy_id) REFERENCES Tbl_policy(policy_id)
+);
 
 CREATE PROCEDURE [dbo].[sp_generate_policy_id]
 AS
